@@ -30,6 +30,40 @@ func CreateUser(first_name, last_name, email, password string) *User {
 	return user
 }
 
+func GetUsers() Users {
+	users := Users{}
+	// El metodo Find() de GORM recibe un puntero a un slice de usuarios
+	// Todos los registros se almacenaran en el slice de usuarios(users)
+	db.Find(&users)
+	return users
+}
+
+func GetUser(id int) *User {
+	user := &User{}
+
+	db.Where("id=?", id).First(user)
+	return user
+}
+
 func (this *User) Save() {
-	db.Create(&this)
+	if this.Id == 0 {
+		db.Create(&this)
+	} else {
+		this.Update()
+	}
+}
+
+func (this *User) Update() {
+	user := User{
+		FirstName: this.FirstName,
+		LastName:  this.LastName,
+		Email:     this.Email,
+		Password:  this.Password,
+	}
+
+	db.Model(&this).UpdateColumns(user)
+}
+
+func (this *User) Delete() {
+	db.Delete(&this)
 }
