@@ -1,10 +1,10 @@
 package models
 
-import "errors"
+import "api-golang/config"
 
 // Lo que va en comillas es el nombre como se identificara en el JSON
 type User struct {
-	Id        int    `json:"id"`
+	Id        int64  `json:"id"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`
@@ -13,50 +13,82 @@ type User struct {
 
 type Users []User
 
-var users = make(map[int]User)
+const userSchema string = `CREATE TABLE 'users' (
+			'id' INT(11) NOT NULL AUTO_INCREMENT,
+			'first_name' VARCHAR(50) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
+			'last_name' VARCHAR(50) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
+			'email' VARCHAR(50) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
+			'password' VARCHAR(255) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
+			'created_at' TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY ('id') USING BTREE,
+			UNIQUE INDEX 'email' ('email') USING BTREE
+		)
+		COLLATE='latin1_swedish_ci'
+		ENGINE=InnoDB`
 
-func SetDefaultUser() {
-	user := User{
-		Id:        1,
-		FirstName: "Juan",
-		LastName:  "Perez",
-		Email:     "juan@mail.com",
-		Password:  "123456",
+//  Funcion que crea un nuevo usuario
+func NewUser(first_name, last_name, email, password string) *User {
+	user := &User{
+		FirstName: first_name,
+		LastName:  last_name,
+		Email:     email,
+		Password:  password,
 	}
-
-	users[user.Id] = user
+	return user
 }
 
-func GetUser(id int) (User, error) {
-	if user, ok := users[id]; ok {
-		return user, nil
+func CreateUser(first_name, last_name, email, password string) *User {
+	user := NewUser(first_name, last_name, email, password)
+	user.Save()
+	return user
+}
+
+func GetUser(id int) *User {
+	user := NewUser("", "", "", "")
+	sql := "SELECT id, first_name, last_name, email, password FROM users WHERE id = ?"
+	rows, _ := config.Query(sql, id)
+
+	if rows.Next() {
+		rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
 	}
-	return User{}, errors.New("User not found")
+	return user
 }
 
 func GetUsers() Users {
-	var usersList Users
-	for _, user := range users {
-		usersList = append(usersList, user)
+
+	sql := "SELECT id, first_name, last_name, email, password FROM users"
+	users := Users{}
+	rows, _ := config.Query(sql)
+
+	for rows.Next() {
+		user := NewUser("", "", "", "")
+		rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
+		users = append(users, *user)
 	}
-	return usersList
+	return users
 }
 
-func SaveUser(user User) User {
-	user.Id = len(users) + 1
-	users[user.Id] = user
-	return user
+func (this *User) Save() {
+
+	if this.Id == 0 { // Si el id es 0, es un nuevo usuario. El id se genera automaticamente
+		this.insert()
+	} else {
+		this.update()
+	}
 }
 
-func UpdateUser(user User, userResponse User) User {
-	user.FirstName = userResponse.FirstName
-	user.LastName = userResponse.LastName
-	user.Email = userResponse.Email
-	user.Password = userResponse.Password
-	users[user.Id] = user
-	return user
+func (this *User) insert() {
+	sql := "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)"
+	result, _ := config.Exec(sql, this.FirstName, this.LastName, this.Email, this.Password)
+	this.Id, _ = result.LastInsertId() // int64
 }
 
-func DeleteUser(id int) {
-	delete(users, id)
+func (this *User) update() {
+	sql := "UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ? WHERE id = ?"
+	config.Exec(sql, this.FirstName, this.LastName, this.Email, this.Password, this.Id)
+}
+
+func (this *User) Delete() {
+	sql := "DELETE FROM users WHERE id = ?"
+	config.Exec(sql, this.Id)
 }
