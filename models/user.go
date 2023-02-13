@@ -1,7 +1,5 @@
 package models
 
-import "api-golang/config"
-
 // Lo que va en comillas es el nombre como se identificara en el JSON
 type User struct {
 	Id        int64  `json:"id"`
@@ -46,7 +44,7 @@ func CreateUser(first_name, last_name, email, password string) *User {
 func GetUser(id int) *User {
 	user := NewUser("", "", "", "")
 	sql := "SELECT id, first_name, last_name, email, password FROM users WHERE id = ?"
-	rows, _ := config.Query(sql, id)
+	rows, _ := Query(sql, id)
 
 	if rows.Next() {
 		rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
@@ -58,7 +56,7 @@ func GetUsers() Users {
 
 	sql := "SELECT id, first_name, last_name, email, password FROM users"
 	users := Users{}
-	rows, _ := config.Query(sql)
+	rows, _ := Query(sql)
 
 	for rows.Next() {
 		user := NewUser("", "", "", "")
@@ -79,16 +77,16 @@ func (this *User) Save() {
 
 func (this *User) insert() {
 	sql := "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)"
-	result, _ := config.Exec(sql, this.FirstName, this.LastName, this.Email, this.Password)
+	result, _ := Exec(sql, this.FirstName, this.LastName, this.Email, this.Password)
 	this.Id, _ = result.LastInsertId() // int64
 }
 
 func (this *User) update() {
 	sql := "UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ? WHERE id = ?"
-	config.Exec(sql, this.FirstName, this.LastName, this.Email, this.Password, this.Id)
+	Exec(sql, this.FirstName, this.LastName, this.Email, this.Password, this.Id)
 }
 
 func (this *User) Delete() {
 	sql := "DELETE FROM users WHERE id = ?"
-	config.Exec(sql, this.Id)
+	Exec(sql, this.Id)
 }

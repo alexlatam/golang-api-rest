@@ -1,14 +1,17 @@
 package main
 
 import (
-	"api-golang/config"
+	"api-golang/orm"
+	"fmt"
 )
 
 func main() {
-	// url := config.GetUrlDatabase()
-	// fmt.Println(url)
+	orm.CreateConnection()
+	orm.CreateTables()
 
-	config.CreateConection()
-	config.Ping()
+	user := orm.NewUser("Juan", "Perez", "test@mail.com", "123456")
+	user.Save()
+
+	fmt.Println(user)
 
 }

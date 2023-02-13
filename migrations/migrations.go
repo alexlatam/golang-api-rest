@@ -1,18 +1,17 @@
 package migrations
 
 import (
-	"api-golang/config"
 	"api-golang/models"
 )
 
 func Migrate() {
-	config.CreateConection()
+	models.CreateConection()
 	createTables()
-	config.CloseConection()
+	models.CloseConection()
 }
 
 func createTables() {
-	config.CreateTable("users", models.UserSchema)
+	models.CreateTable("users", models.UserSchema)
 	// createTable("posts", models.userSchema)
 	// createTable("categories", models.userSchema)
 }

@@ -1,6 +1,7 @@
-package config
+package models
 
 import (
+	"api-golang/config"
 	"database/sql"
 	"fmt"
 	"log"
@@ -11,7 +12,7 @@ import (
 var db *sql.DB
 
 func CreateConection() {
-	url := GetUrlDatabase()
+	url := config.GetUrlDatabase()
 	if connection, err := sql.Open("mysql", url); err != nil {
 		panic(err.Error())
 	} else {
