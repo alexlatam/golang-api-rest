@@ -1,3 +1,5 @@
+github.com/eduardogpg/gonv v0.0.0-20170424170749-4299ebc60ef2 h1:eME1Y2OK4YQYT/1HA0t4jtohRIOlosj01Dm5ZCLJaZQ=
+github.com/eduardogpg/gonv v0.0.0-20170424170749-4299ebc60ef2/go.mod h1:M1hF1eWJax2rUfHsLrnX61jlFVCcUC7A6/kkIbeYzLU=
 github.com/go-sql-driver/mysql v1.7.0 h1:ueSltNNllEqE3qcWBTD0iQd3IpL/6U+mJxLkazJ7YPc=
 github.com/go-sql-driver/mysql v1.7.0/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=
 github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=

@@ -10,19 +10,16 @@ import (
 
 var db *sql.DB
 
-const username string = "root"
-const password string = ""
-const host string = "localhost"
-const port int = 3306
-const database string = "api-golang"
-
-func CreateTables() {
-	createTable("users", models.userSchema)
-	// createTable("posts", models.userSchema)
-	// createTable("categories", models.userSchema)
+func CreateConection() {
+	url := GetUrlDatabase()
+	if connection, err := sql.Open("mysql", url); err != nil {
+		panic(err.Error())
+	} else {
+		db = connection
+	}
 }
 
-func createTable(table, schema string) {
+func CreateTable(table, schema string) {
 	if !existsTable(table) {
 		Exec(schema)
 	} else {
@@ -33,15 +30,6 @@ func createTable(table, schema string) {
 func truncateTable(table string) {
 	sql := fmt.Sprintf("TRUNCATE TABLE %s", table)
 	Exec(sql)
-}
-
-func CreateConection() {
-	connection, err := sql.Open("mysql", generateURL())
-	if err != nil {
-		panic(err.Error())
-	} else {
-		db = connection
-	}
 }
 
 func existsTable(table string) bool {
@@ -75,8 +63,4 @@ func Ping() {
 
 func CloseConection() {
 	db.Close()
-}
-
-func generateURL() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", username, password, host, port, database)
 }

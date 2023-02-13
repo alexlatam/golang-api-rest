@@ -13,7 +13,7 @@ type User struct {
 
 type Users []User
 
-const userSchema string = `CREATE TABLE 'users' (
+const UserSchema string = `CREATE TABLE 'users' (
 			'id' INT(11) NOT NULL AUTO_INCREMENT,
 			'first_name' VARCHAR(50) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
 			'last_name' VARCHAR(50) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
