@@ -7,7 +7,6 @@ import (
 func Migrate() {
 	models.CreateConection()
 	createTables()
-	models.CloseConection()
 }
 
 func createTables() {
